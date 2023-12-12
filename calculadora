@@ -12,37 +12,56 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
-      background-color: #f0f0f0;
+      background-image: url('https://c4.wallpaperflare.com/wallpaper/943/424/1010/vagabond-takehiko-inoue-wallpaper-preview.jpg');
+      background-size: cover;
+      background-position: center;
     }
 
     #calculator {
-      width: 300px;
+      width: 320px;
       padding: 20px;
-      border: 1px solid #ccc;
+      border: 2px solid #3498db;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      background-color: rgba(255, 255, 255, 0.8);
       user-select: none;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 10px;
     }
 
-    input {
-      width: 100%;
+    #display-container {
+      grid-column: span 4;
+      position: relative;
       margin-bottom: 10px;
+    }
+
+    #display {
+      width: 100%;
       padding: 15px;
       font-size: 20px;
       box-sizing: border-box;
       text-align: right;
-      border: none;
+      border: 1px solid #ccc;
+      border-radius: 5px;
       outline: none;
     }
 
+    #calculation-display {
+      position: absolute;
+      top: 0;
+      right: 10px;
+      font-size: 12px;
+      color: #888;
+    }
+
     button {
-      width: 23%;
+      width: 100%;
       padding: 15px;
       font-size: 16px;
       margin: 5px;
       cursor: pointer;
-      border: none;
+      border: 1px solid #ccc;
       background-color: #f5f5f5;
       transition: background-color 0.3s, transform 0.1s;
       border-radius: 5px;
@@ -62,15 +81,23 @@
     }
 
     button.double {
-      width: 48%;
+      width: calc(50% - 5px);
+    }
+
+    button.function {
+      width: 100%;
     }
   </style>
 </head>
 <body>
   <div id="calculator">
-    <input type="text" id="display" readonly>
-    <button onclick="clearDisplay()">C</button>
-    <button onclick="backspace()">&#9003;</button>
+    <div id="display-container">
+      <span id="calculation-display"></span>
+      <input type="text" id="display" readonly>
+    </div>
+    <button class="double" onclick="clearDisplay()">C</button>
+    <button class="double" onclick="backspace()">&#9003;</button>
+    <button class="function" onclick="appendFunction('sqrt(')">√</button>
     <button class="operator" onclick="appendToDisplay('/')">/</button>
     <button onclick="appendToDisplay('7')">7</button>
     <button onclick="appendToDisplay('8')">8</button>
@@ -86,22 +113,18 @@
     <button class="operator double" onclick="appendToDisplay('+')">+</button>
     <button class="double" onclick="appendToDisplay('0')">0</button>
     <button onclick="appendToDisplay('.')">.</button>
-    <button onclick="changeSign()">+/-</button>
-    <button onclick="percentage()">%</button>
+    <button class="function" onclick="changeSign()">+/-</button>
+    <button class="function" onclick="percentage()">%</button>
     <button class="double" onclick="appendToDisplay('(')">(</button>
     <button class="double" onclick="appendToDisplay(')')">)</button>
-    <button class="double" onclick="appendFunction('sqrt(')">√</button>
-    <button class="double" onclick="appendFunction('sin(')">sin</button>
-    <button class="double" onclick="appendFunction('cos(')">cos</button>
-    <button class="double" onclick="appendFunction('tan(')">tan</button>
-    <button class="double" onclick="appendFunction('log(')">log</button>
-    <button onclick="calculate()">=</button>
+    <button class="function" onclick="calculate()">=</button>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.1.0/math.js"></script>
   <script>
     function clearDisplay() {
       document.getElementById('display').value = '';
+      document.getElementById('calculation-display').innerText = '';
     }
 
     function appendToDisplay(value) {
@@ -121,9 +144,11 @@
       const display = document.getElementById('display');
       try {
         const result = math.evaluate(display.value);
+        document.getElementById('calculation-display').innerText = display.value;
         display.value = formatResult(result);
       } catch (error) {
         display.value = 'Error';
+        document.getElementById('calculation-display').innerText = '';
       }
     }
 
@@ -131,9 +156,11 @@
       const display = document.getElementById('display');
       try {
         const result = math.evaluate(`${display.value}/100`);
+        document.getElementById('calculation-display').innerText = `${display.value}/100`;
         display.value = formatResult(result);
       } catch (error) {
         display.value = 'Error';
+        document.getElementById('calculation-display').innerText = '';
       }
     }
 
